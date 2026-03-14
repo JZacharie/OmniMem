@@ -1,0 +1,20 @@
+namespace omnimem {};
+
+[Error]
+enum OmniMemError {
+    "AudioError",
+    "NetworkError",
+    "InternalError",
+};
+
+interface OmniMemSession {
+    constructor(string api_key);
+
+    [Throws=OmniMemError]
+    void process_audio([ByRef] bytes audio_data);
+
+    string get_partial_transcription();
+
+    [Throws=OmniMemError]
+    string stop_and_summarize();
+};
