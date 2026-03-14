@@ -3,6 +3,8 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+apply from: '../rust-build.gradle'
+
 android {
     namespace 'com.omnimem.app'
     compileSdk 34

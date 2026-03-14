@@ -1,0 +1,53 @@
+// Configuration pour le build Rust / Android NDK
+project.afterEvaluate {
+    android.applicationVariants.all { variant ->
+        def archMap = [
+            "arm64-v8a": "aarch64-linux-android",
+            "x86_64": "x86_64-linux-android",
+            "armeabi-v7a": "armv7-linux-androideabi",
+            "x86": "i686-linux-android"
+        ]
+
+        def targetName = variant.name.capitalize()
+        def buildTask = tasks.create("buildRust\${targetName}") {
+            group = "rust"
+            description = "Build Rust core for \${variant.name}"
+
+            doLast {
+                def cargoNdk = "cargo-ndk" // Assurez-vous que cargo-ndk est installé
+                
+                android.defaultConfig.ndk.abiFilters.each { abi ->
+                    def target = archMap[abi]
+                    if (target == null) return
+
+                    println "Building Rust for \$abi (\$target)..."
+                    
+                    exec {
+                        workingDir "../omnimem-core"
+                        commandLine 'cargo', 'ndk', '-t', abi, 'build', '--release'
+                    }
+
+                    // Copie des .so vers jniLibs
+                    def sourceDir = "../omnimem-core/target/\$target/release"
+                    def destDir = "src/main/jniLibs/\$abi"
+                    
+                    mkdir destDir
+                    copy {
+                        from sourceDir
+                        into destDir
+                        include "*.so"
+                    }
+                }
+
+                // Génération UniFFI Kotlin
+                println "Generating UniFFI bindings..."
+                exec {
+                    workingDir "../omnimem-core"
+                    commandLine 'cargo', 'run', '--features', 'uniffi/cli', '--', 'generate', '--library', 'target/aarch64-linux-android/release/libomnimem_core.so', '--language', 'kotlin', '--out-dir', "../app/src/main/java"
+                }
+            }
+        }
+
+        variant.javaCompileProvider.get().dependsOn(buildTask)
+    }
+}
