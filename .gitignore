@@ -1,24 +1,19 @@
-# Rust
-omnimem-core/target/
-target/
-**/*.rs.bk
-Cargo.lock
-
-# Android
-.gradle/
-build/
-omnimem-wear/.gradle/
-omnimem-wear/build/
-omnimem-wear/app/build/
-local.properties
 *.iml
-.idea/
-
-# Android SDK local tools (installé manuellement pour la compilation)
-/android-sdk/
-/cmdline-tools.zip
-
-# Misc
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
 .DS_Store
-*.swp
-*.log
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+android-sdk/
+target/
+cmdline-tools.zip
+
